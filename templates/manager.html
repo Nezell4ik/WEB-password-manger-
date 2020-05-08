@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<center>
+    <br><br><br><br>
+    <h1>Ваши пароли</h1><br>
+    <div class="container">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">URL</th>
+                <th scope="col">Email</th>
+                <th scope="col">Password</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>@mdo</td>
+                <td>1234</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>@fat</td>
+                <td>2222</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>Larry</td>
+                <td>@twitter</td>
+                <td>test</td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-success btn-lg">Добавить</button>
+            <button type="button" class="btn btn-success btn-lg">Изменить</button>
+            <button type="button" class="btn btn-success btn-lg">Удалить</button>
+        </div>
+    </div>
+</center>
+{% endblock %}
