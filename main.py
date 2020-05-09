@@ -1,11 +1,11 @@
 from flask import Flask, render_template, redirect, request, make_response, session
-from flask_login import LoginManager, login_user, login_required, logout_user
-from flask_wtf import FlaskForm
-from wtforms import PasswordField, StringField, TextAreaField, SubmitField, BooleanField
-from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
-from data import db_session
+from data import db_session, passwords
+from data.addform import AddForm
+from data.loginform import LoginForm
+from data.passwords import Password
+from data.registerform import RegisterForm
 from data.users import User
 
 app = Flask(__name__)
@@ -22,19 +22,6 @@ def main():
     def index():
         session = db_session.create_session()
         return render_template("index.html")
-
-    class RegisterForm(FlaskForm):
-        email = EmailField('Почта', validators=[DataRequired()])
-        password = PasswordField('Пароль', validators=[DataRequired()])
-        password_again = PasswordField('Повторите пароль', validators=[DataRequired()])
-        name = StringField('Имя пользователя', validators=[DataRequired()])
-        submit = SubmitField('Войти')
-
-    class LoginForm(FlaskForm):
-        email = EmailField('Почта', validators=[DataRequired()])
-        password = PasswordField('Пароль', validators=[DataRequired()])
-        remember_me = BooleanField('Запомнить меня')
-        submit = SubmitField('Войти')
 
     @app.route('/register', methods=['GET', 'POST'])
     def reqister():
@@ -95,10 +82,39 @@ def main():
         return render_template("testpass.html")
 
     @app.route("/manager")
-    @login_required
     def manager():
+        if current_user.is_authenticated:
+            session = db_session.create_session()
+            passwords = session.query(Password).filter(Password.user == current_user)
+            return render_template("manager.html", passwords=passwords)
+        else:
+            session = db_session.create_session()
+            return render_template("manager.html")
+
+    @app.route('/add', methods=['GET', 'POST'])
+    def add():
+        form = AddForm()
+        if form.validate_on_submit():
+            session = db_session.create_session()
+            passwords = Password()
+            passwords.url = form.url.data
+            passwords.login = form.login.data
+            passwords.password = form.password.data
+            current_user.passwords.append(passwords)
+            session.merge(current_user)
+            session.commit()
+            return redirect('/manager')
+        return render_template('addordel.html', title='добавление пароля', form=form)
+
+    @app.route('/change')
+    def change():
         session = db_session.create_session()
-        return render_template("manager.html")
+        return render_template("addordel.html")
+
+    @app.route('/delete')
+    def delete():
+        session = db_session.create_session()
+        return render_template("addordel.html")
 
     app.run()
 

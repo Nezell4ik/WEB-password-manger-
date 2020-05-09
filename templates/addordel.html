@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <br><br><br><br>
+    <center><h1>Добавление пароля</h1></center>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+
+        {{ form.url.label }}<br>
+        {{ form.url(class="form-control", type="text") }}<br>
+        {% for error in form.url.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endfor %}
+
+        {{ form.login.label }}<br>
+        {{ form.login(class="form-control", type="text") }}<br>
+        {% for error in form.login.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endfor %}
+
+        {{ form.password.label }}<br>
+        {{ form.password(class="form-control", type="text") }}<br>
+        {% for error in form.password.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endfor %}
+        {{ form.submit(type="submit", class="btn btn-success") }}
+        <div>{{ message }}</div>
+    </form>
+</div>
+{% endblock %}

@@ -1,46 +1,42 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if current_user.is_authenticated %}
 <center>
     <br><br><br><br>
-    <h1>Ваши пароли</h1><br>
+    <h1>Ваши пароли, {{ current_user.name }}</h1><br>
     <div class="container">
         <table class="table table-striped">
             <thead class="thead-dark">
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">URL</th>
                 <th scope="col">Email</th>
                 <th scope="col">Password</th>
             </tr>
             </thead>
+            {% for item in passwords %}
             <tbody>
             <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>@mdo</td>
-                <td>1234</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>@fat</td>
-                <td>2222</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Larry</td>
-                <td>@twitter</td>
-                <td>test</td>
+                <td>{{item.url}}</td>
+                <td>{{item.login}}</td>
+                <td>{{item.password}}</td>
             </tr>
             </tbody>
+            {% endfor %}
         </table>
         <br>
         <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-success btn-lg">Добавить</button>
-            <button type="button" class="btn btn-success btn-lg">Изменить</button>
-            <button type="button" class="btn btn-success btn-lg">Удалить</button>
+            <a type="button" href="add" class="btn btn-success btn-lg">Добавить</a>
+            <a type="button" href="change" class="btn btn-success btn-lg">Изменить</a>
+            <a type="button" href="delete" class="btn btn-success btn-lg">Удалить</a>
         </div>
     </div>
 </center>
+{% else %}
+<center>
+    <div class="alert alert-danger" role="alert">
+        <h1 class="display-3">Чтобы воспользоваться менеджером войдите!</h1>
+    </div>
+</center>
+{% endif %}
 {% endblock %}
