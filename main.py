@@ -86,10 +86,12 @@ def main():
         logout_user()
         return redirect("/")
 
+    # Обработчик проверки надёжности пароля.
     @app.route("/testpass", methods=['GET', 'POST'])
     def testpass():
         form = TestForm()
 
+        # Функция проверки парорля. Возвращает булево значение в соответсвии сложности пароля.
         def passwordhard(data):
             return not (len(data) < 6 or data.isdigit() or data.islower() or data.isalpha() or data.isupper())
 
@@ -100,6 +102,7 @@ def main():
                 return render_template("testpass.html", form=form, flag='bad')
         return render_template("testpass.html", form=form, flag='')
 
+    # Обработчик главной страницы менеджера паролей. Здесь формируются данные для вывода в таблицу.
     @app.route("/manager")
     def manager():
         if current_user.is_authenticated:
@@ -109,6 +112,7 @@ def main():
         else:
             return render_template("manager.html")
 
+    # Обработчик добавления пароля.
     @app.route('/add', methods=['GET', 'POST'])
     def add():
         form = AddForm()
@@ -124,6 +128,7 @@ def main():
             return redirect('/manager')
         return render_template('addordel.html', title='Добавление пароля', form=form)
 
+    # Обработчик изменения пароля.
     @app.route('/change', methods=['GET', 'POST'])
     def change():
         form = ChangeForm()
@@ -136,10 +141,11 @@ def main():
                 session.commit()
             else:
                 return render_template('addordel.html', title='Изменение пароля', form=form,
-                                       message='Нет такого логина или URL. Попробуйте ещё раз.')
+                                       message='Нет такого логина или сервиса. Попробуйте ещё раз.')
             return redirect('/manager')
         return render_template('addordel.html', title='Изменение пароля', form=form)
 
+    # Обработчик удаления пароля.
     @app.route('/delete', methods=['GET', 'POST'])
     def delete():
         form = DeleteForm()
@@ -152,7 +158,7 @@ def main():
                 session.commit()
             else:
                 return render_template('delete.html', title='Удаление пароля', form=form,
-                                       message='Нет такого пароля. Попробуйте ещё раз.')
+                                       message='Нет такого сервиса или логина. Попробуйте ещё раз.')
             return redirect('/manager')
         return render_template('delete.html', title='Удаление пароля', form=form)
 
