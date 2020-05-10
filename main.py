@@ -1,7 +1,8 @@
-from flask import Flask, render_template, redirect, request, make_response, session
+from flask import Flask, render_template, redirect, request, make_response, session, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_restful import Api
 
-from data import db_session
+from data import db_session, passwords_api, passwords_resources
 from data.addform import AddForm
 from data.changeform import ChangeForm
 from data.deleteform import DeleteForm
@@ -15,11 +16,23 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 login_manager = LoginManager()
+api = Api(app)
 login_manager.init_app(app)
 
 
 def main():
     db_session.global_init("db/manager.sqlite")
+
+    app.register_blueprint(passwords_api.blueprint)
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return make_response(jsonify({'error': 'Not found'}), 404)
+
+    # для списка объектов
+    api.add_resource(passwords_resources.PasswordsListResource, '/api/v2/passwords')
+    # для одного объекта
+    api.add_resource(passwords_resources.PasswordsResource, '/api/v2/passwords/<int:passwords_id>')
 
     @app.route("/")
     def index():
