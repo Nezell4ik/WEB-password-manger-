@@ -89,12 +89,16 @@ def main():
     @app.route("/testpass", methods=['GET', 'POST'])
     def testpass():
         form = TestForm()
+
+        def passwordhard(data):
+            return not (len(data) < 6 or data.isdigit() or data.islower() or data.isalpha() or data.isupper())
+
         if form.validate_on_submit():
-            if len(form.password.data) <= 4:
-                return render_template("testpass.html", form=form, flag='bad')
-            else:
+            if passwordhard(form.password.data):
                 return render_template("testpass.html", form=form, flag='good')
-        return render_template("testpass.html", form=form, flag='not')
+            else:
+                return render_template("testpass.html", form=form, flag='bad')
+        return render_template("testpass.html", form=form, flag='')
 
     @app.route("/manager")
     def manager():
