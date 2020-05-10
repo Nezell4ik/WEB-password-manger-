@@ -2,22 +2,35 @@
 
 {% block content %}
 <br><br><br><br><br><br><br>
-<div class="container">
-    <div class="jumbotron">
-        <center>
+<center><h1>Проверка пароля</h1></center>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <div class="container">
+        <div class="jumbotron">
 
+            {% if flag == 'good' %}
             <div class="alert alert-success" role="alert">
                 Пароль надёжный!
             </div>
 
+            {% elif flag == 'bad' %}
             <div class="alert alert-danger" role="alert">
                 Пароль ненадёжный!
             </div>
+            {% endif%}
 
-            <input class="form-control" type="text" placeholder="Введите пароль">
-            <br><br><br><br>
-            <button type="button" class="btn btn-success">Проверить</button>
-        </center>
+            {{ form.password.label }}<br>
+            {{ form.password(class="form-control", type="text") }}<br>
+            {% for error in form.password.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endfor %}
+
+            <br><br><br>
+            <center>{{ form.submit(type="submit", class="btn btn-success") }}</center>
+
+        </div>
     </div>
-</div>
+</form>
 {% endblock %}

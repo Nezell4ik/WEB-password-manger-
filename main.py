@@ -8,6 +8,7 @@ from data.deleteform import DeleteForm
 from data.loginform import LoginForm
 from data.passwords import Password
 from data.registerform import RegisterForm
+from data.testform import TestForm
 from data.users import User
 
 app = Flask(__name__)
@@ -72,13 +73,15 @@ def main():
         logout_user()
         return redirect("/")
 
-    @app.route("/genpass")
-    def genpass():
-        return render_template("genpass.html")
-
-    @app.route("/testpass")
+    @app.route("/testpass", methods=['GET', 'POST'])
     def testpass():
-        return render_template("testpass.html")
+        form = TestForm()
+        if form.validate_on_submit():
+            if len(form.password.data) <= 4:
+                return render_template("testpass.html", form=form, flag='bad')
+            else:
+                return render_template("testpass.html", form=form, flag='good')
+        return render_template("testpass.html", form=form, flag='not')
 
     @app.route("/manager")
     def manager():
