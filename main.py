@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request, make_response, session
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
-from data import db_session, passwords
+from data import db_session
 from data.addform import AddForm
 from data.changeform import ChangeForm
 from data.deleteform import DeleteForm
@@ -90,7 +90,6 @@ def main():
             passwords = session.query(Password).filter(Password.user == current_user)
             return render_template("manager.html", passwords=passwords)
         else:
-            session = db_session.create_session()
             return render_template("manager.html")
 
     @app.route('/add', methods=['GET', 'POST'])
@@ -115,8 +114,12 @@ def main():
             session = db_session.create_session()
             passwords = session.query(Password).filter(Password.url == form.url.data,
                                                        Password.login == form.login.data).first()
-            passwords.password = form.password.data
-            session.commit()
+            if passwords:
+                passwords.password = form.password.data
+                session.commit()
+            else:
+                return render_template('addordel.html', title='Изменение пароля', form=form,
+                                       message='Нет такого логина или URL. Попробуйте ещё раз.')
             return redirect('/manager')
         return render_template('addordel.html', title='Изменение пароля', form=form)
 
@@ -132,7 +135,7 @@ def main():
                 session.commit()
             else:
                 return render_template('delete.html', title='Удаление пароля', form=form,
-                                       message='Нет такого пароля. Попробуйте ещё раз')
+                                       message='Нет такого пароля. Попробуйте ещё раз.')
             return redirect('/manager')
         return render_template('delete.html', title='Удаление пароля', form=form)
 
