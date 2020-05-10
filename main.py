@@ -3,6 +3,8 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 
 from data import db_session, passwords
 from data.addform import AddForm
+from data.changeform import ChangeForm
+from data.deleteform import DeleteForm
 from data.loginform import LoginForm
 from data.passwords import Password
 from data.registerform import RegisterForm
@@ -20,7 +22,6 @@ def main():
 
     @app.route("/")
     def index():
-        session = db_session.create_session()
         return render_template("index.html")
 
     @app.route('/register', methods=['GET', 'POST'])
@@ -73,12 +74,10 @@ def main():
 
     @app.route("/genpass")
     def genpass():
-        session = db_session.create_session()
         return render_template("genpass.html")
 
     @app.route("/testpass")
     def testpass():
-        session = db_session.create_session()
         return render_template("testpass.html")
 
     @app.route("/manager")
@@ -104,17 +103,35 @@ def main():
             session.merge(current_user)
             session.commit()
             return redirect('/manager')
-        return render_template('addordel.html', title='добавление пароля', form=form)
+        return render_template('addordel.html', title='Добавление пароля', form=form)
 
-    @app.route('/change')
+    @app.route('/change', methods=['GET', 'POST'])
     def change():
-        session = db_session.create_session()
-        return render_template("addordel.html")
+        form = ChangeForm()
+        if form.validate_on_submit():
+            session = db_session.create_session()
+            passwords = session.query(Password).filter(Password.url == form.url.data,
+                                                       Password.login == form.login.data).first()
+            passwords.password = form.password.data
+            session.commit()
+            return redirect('/manager')
+        return render_template('addordel.html', title='Изменение пароля', form=form)
 
-    @app.route('/delete')
+    @app.route('/delete', methods=['GET', 'POST'])
     def delete():
-        session = db_session.create_session()
-        return render_template("addordel.html")
+        form = DeleteForm()
+        if form.validate_on_submit():
+            session = db_session.create_session()
+            passwords = session.query(Password).filter(Password.url == form.url.data,
+                                                       Password.login == form.login.data).first()
+            if passwords:
+                session.delete(passwords)
+                session.commit()
+            else:
+                return render_template('delete.html', title='Удаление пароля', form=form,
+                                       message='Нет такого пароля. Попробуйте ещё раз')
+            return redirect('/manager')
+        return render_template('delete.html', title='Удаление пароля', form=form)
 
     app.run()
 

@@ -24,17 +24,10 @@
             </div>
             {% endfor %}
 
-            {{ form.password.label }}<br>
-            {{ form.password(class="form-control", type="text") }}<br>
-            {% for error in form.password.errors %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
-            {% endfor %}
-
             {{ form.submit(type="submit", class="btn btn-success") }}
+
             <br>
-            {{ messege }}
+            <div>{{ message }}</div>
         </form>
     </div>
 </div>
